@@ -10,7 +10,7 @@
 <?php include('./db_connect.php'); ?>
 
 <?php 
-session_start();
+
 if(isset($_SESSION['login_id']))
 header("location:index.php?page=home");
 $query = $conn->query("SELECT * FROM system_settings limit 1")->fetch_array();
@@ -18,8 +18,19 @@ $query = $conn->query("SELECT * FROM system_settings limit 1")->fetch_array();
 			if(!is_numeric($key))
 				$_SESSION['setting_'.$key] = $value;
 		}
-		
+		$now = time(); // Checking the time now when home page starts.
+
+        
     if(isset($_POST["verify"])){
+        if ($now > $_SESSION['expire']) {
+            session_destroy();
+           
+            ?>
+            <script>window.location.replace("otp.php")</script>;
+            
+       <?php 
+       
+        }else{
         $otp = $_SESSION['otp'];
         $email = $_SESSION['mail'];
         $otp_code = $_POST['otp_code'];
@@ -35,11 +46,11 @@ $query = $conn->query("SELECT * FROM system_settings limit 1")->fetch_array();
             ?>
              <script>
                  alert("Verfiy account done, you may sign in now");
-                   window.location.replace("home.php");
+                   window.location.replace("index.php?page=home");
              </script>
              <?php
         }
-
+        }
     }
 ?>
 </head>
@@ -50,7 +61,9 @@ $query = $conn->query("SELECT * FROM system_settings limit 1")->fetch_array();
 			<img src="assets/img/bg.svg">
 		</div>
 		<div class="otp-content">
+            
             <form action="#" method="POST">
+               
                 <img src="assets/img/avatar.svg">
                 <div class="form-group">
                 <h2 class="title">Enter OTP</h2>

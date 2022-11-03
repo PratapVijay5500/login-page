@@ -18,8 +18,7 @@ use PHPMailer\PHPMailer\SMTP;
 use PHPMailer\PHPMailer\Exception;
 
 
-if(isset($_SESSION['login_id']))
-header("location:index.php?page=home");
+
 
 $query = $conn->query("SELECT * FROM system_settings limit 1")->fetch_array();
 		foreach ($query as $key => $value) {
@@ -40,6 +39,9 @@ $query = $conn->query("SELECT * FROM system_settings limit 1")->fetch_array();
                     $otp = rand(100000,999999);
                     $_SESSION['otp'] = $otp;
                     $_SESSION['mail'] = $email;
+                    $_SESSION['start'] = time(); // Taking now logged in time.
+            // Ending a session in 30 minutes from the starting time.
+            $_SESSION['expire'] = $_SESSION['start'] + (40);
                     require 'vendor/autoload.php';
                     $mail = new PHPMailer;
     
@@ -71,8 +73,8 @@ $query = $conn->query("SELECT * FROM system_settings limit 1")->fetch_array();
                             }else{
                                 ?>
                                 <script>
-                                    alert("<?php echo "Register Successfully, OTP sent to " . $email ?>");
-                                    window.location.replace('otp.php');
+                                    // alert("<?php echo "Register Successfully, OTP sent to " . $email ?>");
+                                    window.location.replace('index.php?page=otp');
                                 </script>
                                 <?php
                             }
